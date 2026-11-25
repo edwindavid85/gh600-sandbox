@@ -8,3 +8,9 @@
 /.github/workflows/copilot-setup-steps.yml @edwindavid85
 /.vscode/mcp.json @edwindavid85
 /app/inventory.py @edwindavid85
+
+# In an organization you would split ownership, for example:
+# /.github/agents/                 @your-org/ai-governance
+# /.github/copilot-instructions.md @your-org/ai-governance
+# /.github/workflows/              @your-org/platform-team
+# /.github/CODEOWNERS              @your-org/ai-governance
