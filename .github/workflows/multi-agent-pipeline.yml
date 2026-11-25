@@ -1,0 +1,99 @@
+name: multi-agent-pipeline
+on:
+  workflow_dispatch:
+    inputs:
+      fail_docs:
+        description: "Simulate a failed docs agent"
+        type: boolean
+        default: false
+      stall_impl:
+        description: "Simulate a stalled implementer (hits its timeout)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: multi-agent-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - name: Coordinator writes the plan and scopes
+        run: |
+          mkdir -p out
+          echo "app/**"  > out/impl-scope.txt
+          echo "docs/**" > out/docs-scope.txt
+          echo "coordinator plan for run ${{ github.run_id }}" > out/plan.md
+      - uses: actions/upload-artifact@v7
+        with:
+          name: plan
+          path: out/
+
+  implement:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.stall_impl && 1 || 20 }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: plan
+          path: plan
+      - name: Implementer agent (placeholder)
+        env:
+          STALL: ${{ inputs.stall_impl }}
+        run: |
+          if [ "$STALL" = "true" ]; then echo "waiting on something that never answers..."; sleep 120; fi
+          mkdir -p out
+          echo "implementer scope: $(cat plan/impl-scope.txt)" > out/implementer-handoff.md
+      - uses: actions/upload-artifact@v7
+        with:
+          name: implementer
+          path: out/
+
+  docs:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: plan
+          path: plan
+      - name: Docs agent (placeholder)
+        env:
+          FAIL: ${{ inputs.fail_docs }}
+        run: |
+          if [ "$FAIL" = "true" ]; then echo "::error::docs agent failed"; exit 1; fi
+          mkdir -p out
+          echo "docs scope: $(cat plan/docs-scope.txt)" > out/docs-handoff.md
+      - uses: actions/upload-artifact@v7
+        with:
+          name: docs
+          path: out/
+
+  merge-check:
+    needs: [implement, docs]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Detect failed or partial runs
+        env:
+          IMPL: ${{ needs.implement.result }}
+          DOCS: ${{ needs.docs.result }}
+        run: |
+          echo "implement: $IMPL"
+          echo "docs: $DOCS"
+          if [ "$IMPL" != "success" ] || [ "$DOCS" != "success" ]; then
+            echo "::error::A coordinated agent did not finish; escalate to a human"
+            exit 1
+          fi
+          echo "All workers finished; ready for fan-in review"
