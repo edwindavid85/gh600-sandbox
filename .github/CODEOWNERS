@@ -7,3 +7,4 @@
 /infra/                          @edwindavid85
 /.github/workflows/copilot-setup-steps.yml @edwindavid85
 /.vscode/mcp.json @edwindavid85
+/app/inventory.py @edwindavid85
