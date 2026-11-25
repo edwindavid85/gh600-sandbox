@@ -5,3 +5,5 @@
 /.github/copilot-instructions.md @edwindavid85
 /.github/CODEOWNERS              @edwindavid85
 /infra/                          @edwindavid85
+/.github/workflows/copilot-setup-steps.yml @edwindavid85
+/.vscode/mcp.json @edwindavid85
