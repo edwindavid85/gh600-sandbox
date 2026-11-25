@@ -51,6 +51,6 @@ class Inventory:
         """Total value of all stock, rounded to cents."""
         return round(sum(i.quantity * i.unit_price for i in self.items.values()), 2)
 
-    def low_stock(self, threshold: int = 5) -> list[str]:
+    def low_stock(self, threshold: int = 3) -> list[str]:
         """SKUs at or below the threshold, sorted."""
         return sorted(s for s, i in self.items.items() if i.quantity <= threshold)
