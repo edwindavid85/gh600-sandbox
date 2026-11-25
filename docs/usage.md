@@ -12,3 +12,4 @@ print(inv.low_stock(threshold=5))
 ```
 
 `remove` raises `ValueError` when there is not enough stock.
+Note: quantities are whole units.
