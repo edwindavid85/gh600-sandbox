@@ -1,0 +1,6 @@
+app/inventory.py
+tests/test_inventory.py
+docs/usage.md
+CHANGELOG.md
+lab-notes/task-state.md
+lab-notes/plan-files.txt

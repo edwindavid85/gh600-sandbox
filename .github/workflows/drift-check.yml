@@ -1,0 +1,21 @@
+name: drift-check
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  drift:
+    name: drift-check
+    # Only agent branches carry an approved plan file to check against.
+    # A skipped job counts as passing if you make this a required check.
+    if: startsWith(github.head_ref, 'agent/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Compare changed files with the approved plan
+        run: bash scripts/drift-check.sh "origin/${{ github.base_ref }}" lab-notes/plan-files.txt
