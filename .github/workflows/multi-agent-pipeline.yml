@@ -29,11 +29,17 @@ jobs:
           mkdir -p out
           echo "app/**"  > out/impl-scope.txt
           echo "docs/**" > out/docs-scope.txt
-          echo "coordinator plan for run ${{ github.run_id }}" > out/plan.md
+          {
+            echo "# Plan for run ${{ github.run_id }}"
+            echo "- Started by: ${{ github.actor }}"
+            echo "- Commit: ${{ github.sha }}"
+            echo "- Scopes: implement=app/**, docs=docs/**"
+          } > out/plan.md
       - uses: actions/upload-artifact@v7
         with:
           name: plan
           path: out/
+          retention-days: 90
 
   implement:
     needs: plan
