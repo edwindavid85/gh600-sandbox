@@ -8,3 +8,4 @@ Practice repository for the GH-600 video course labs.
 - `lab-notes/` – your evidence and notes for every lab
 
 This repository contains no secrets and must never contain any.
+Refactored for clarity.
