@@ -1,0 +1,7 @@
+# Replace edwindavid85 with your GitHub username (or @your-org/team-name in an organization).
+# Workflows, infrastructure and agent configuration always need a human owner's review.
+/.github/workflows/              @edwindavid85
+/.github/agents/                 @edwindavid85
+/.github/copilot-instructions.md @edwindavid85
+/.github/CODEOWNERS              @edwindavid85
+/infra/                          @edwindavid85
