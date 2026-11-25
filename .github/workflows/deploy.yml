@@ -1,0 +1,14 @@
+name: deploy
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production   # waits for a required reviewer before it runs
+    timeout-minutes: 5
+    steps:
+      - run: echo "Pretend deployment of ${{ github.sha }} to production"
