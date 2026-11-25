@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from app.logging_utils import log_event, record_event
+from app.logging_utils import record_event
 
 
 @dataclass
@@ -33,7 +33,7 @@ class Inventory:
         if amount <= 0:
             raise ValueError("amount must be positive")
         self.items[sku].quantity += amount
-        log_event("restock", sku=sku, amount=amount)
+        record_event("restock", sku=sku, amount=amount)
         return self.items[sku].quantity
 
     def remove(self, sku: str, amount: int) -> int:
