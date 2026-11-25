@@ -1,0 +1,27 @@
+name: pr-contract-check
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  check:
+    name: pr-contract-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require plan, success criteria and rollback sections
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          missing=0
+          for s in "## Plan" "## Success criteria" "## Rollback"; do
+            if ! printf '%s' "$PR_BODY" | grep -qF "$s"; then
+              echo "::error::PR description is missing section: $s"
+              missing=1
+            fi
+          done
+          exit $missing
