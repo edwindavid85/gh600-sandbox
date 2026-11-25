@@ -1,0 +1,22 @@
+name: lint
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install ruff
+      # E/F = correctness, S = security rules (flake8-bandit). S101 (assert) is fine in tests.
+      - run: ruff check --select E,F,S --ignore S101 --line-length 120 app tests
