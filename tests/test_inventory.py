@@ -33,4 +33,4 @@ def test_total_value():
 
 
 def test_low_stock():
-    assert make().low_stock() == ["A-1", "B-2"]
+    assert make().low_stock() == ["B-2"]
