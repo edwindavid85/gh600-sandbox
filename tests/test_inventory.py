@@ -34,3 +34,7 @@ def test_total_value():
 
 def test_low_stock():
     assert make().low_stock() == ["B-2"]
+
+
+def test_items_are_not_discontinued_by_default():
+    assert make().items["A-1"].discontinued is False

@@ -10,6 +10,7 @@ class Item:
     name: str
     quantity: int = 0
     unit_price: float = 0.0
+    discontinued: bool = False
 
 
 @dataclass
