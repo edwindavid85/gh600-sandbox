@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from app.logging_utils import log_event
+from app.logging_utils import record_event
 
 
 @dataclass
@@ -43,7 +43,7 @@ class Inventory:
         if amount > item.quantity:
             raise ValueError(f"not enough stock for {sku}: have {item.quantity}, need {amount}")
         item.quantity -= amount
-        log_event("remove", sku=sku, amount=amount)
+        record_event("remove", sku=sku, amount=amount)
         return item.quantity
 
     def total_value(self) -> float:
