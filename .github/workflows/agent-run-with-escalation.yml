@@ -1,0 +1,57 @@
+name: agent-run-with-escalation
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Placeholder behaviour: fail, flaky or succeed"
+        type: choice
+        options: [fail, flaky, succeed]
+        default: fail
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: agent-run-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Run agent task with bounded retries
+        id: agent
+        env:
+          AGENT_TASK_MODE: ${{ inputs.mode }}
+        run: |
+          attempts=0
+          max=2
+          until bash scripts/run-agent-task.sh; do
+            attempts=$((attempts+1))
+            if [ "$attempts" -ge "$max" ]; then
+              echo "failed=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "Attempt $attempts failed; retrying in 30s"
+            sleep 30
+          done
+
+      - name: Escalate to a human
+        if: steps.agent.outputs.failed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "Agent run failed: ${{ github.run_id }}" \
+            --body "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --assignee "${{ github.actor }}"
+
+      - name: Mark the run as failed
+        if: steps.agent.outputs.failed == 'true'
+        run: |
+          echo "::error::Agent task failed after bounded retries; escalated to a human"
+          exit 1
